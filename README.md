@@ -1,5 +1,6 @@
  
-#Entities
+Entities
+=====================================
 
 
 1) A DB model can be designed by a ER model.
@@ -29,6 +30,8 @@ UserName
 Name
 Machine
 TimeUsage
+
+![ER](./db/ER_MODEL.png)
 
 
 b)
