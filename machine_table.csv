@@ -1,0 +1,2 @@
+echo mac_addr,need_testing,is_up,ip_addr,name,cpu,memory
+7a:79:00:00:00:00,true,true,192.168.0.32,quartz,14,101.9

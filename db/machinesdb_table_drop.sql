@@ -1,3 +1,3 @@
-DROP TABLE public.machine CASCADE;
-DROP TABLE public.machine_processes CASCADE;
-DROP TABLE public.users_info CASCADE;
+DROP TABLE machinesdb.machine CASCADE;
+DROP TABLE machinesdb.machine_processes CASCADE;
+DROP TABLE machinesdb.users_info CASCADE;

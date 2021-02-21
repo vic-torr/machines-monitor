@@ -1,0 +1,6 @@
+LOAD DATA INFILE './machines.csv' 
+INTO TABLE machine_processes 
+FIELDS TERMINATED BY ',' 
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS; 

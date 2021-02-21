@@ -4,11 +4,9 @@
     require_once("includes/common.php"); 
     require_once("includes/helpers.php");
     
-    // store uid of the user
-    $uid = $_SESSION["uid"];
 
     // prepare sql
-    $sql = "SELECT * FROM users WHERE uid ='$uid'";
+    $sql = "SELECT * FROM machinesdb WHERE uid ='$uid'";
 
     // find username
     $result = mysqli_query($connection, $sql);

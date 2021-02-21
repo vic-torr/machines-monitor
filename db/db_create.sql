@@ -1,6 +1,6 @@
 -- Database: machinesdb
 -- Author: machinesdb
-CREATE DATABASE machinesdb
+CREATE DATABASE IF NOT EXISTS machinesdb
     WITH OWNER = postgres
         ENCODING = 'UTF8'
         TABLESPACE = machinesdb
