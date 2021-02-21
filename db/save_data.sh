@@ -1,10 +1,13 @@
 #!/bin/sh
-
-script_path=$("$0" | sed '[^\/]+$')
-echo script_path
-"$0" | cd 
+BASEDIR=$(dirname "$0") 
+#script_path=$("$0" | sed '[^\/]+$')
+echo $BASEDIR
+cd $BASEDIR
 pwd
-ps -e -o,%p, -o time -o,%C, -o %mem -o,%U, -o %c | tr -s '[:blank:]' ',' | sed 's/^.//g' > process.csv && cat process.csv
+
+ps_id=32
+#ps -e -o %p, -o "fname", -o time -o,%C, -o %mem -o,%U, -o %c | tr -s '[:blank:]' ',' | sed 's/^.//g' > process.csv && cat process.csv
+ps -e -o %p, -o fname -o,%C, -o %mem, -o ,%x -o,%U, -o %c | sed 's/^.//g' > process.csv && cat process.csv
 
 w -f| awk '(NR>1)' | tr -s '[:blank:]' ',' > users.csv
 
