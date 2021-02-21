@@ -1,5 +1,6 @@
 USER,TTY,LOGIN@,IDLE,JCPU,PCPU,WHAT
-vektor,tty1,08:34,1:32m,2:13,0.02s,/usr/bin/startplasma-x11
-vektor,pts/0,08:34,1:32m,0.00s,4.92s,kded5
-vektor,pts/6,09:12,8:04,1.97s,1.89s,/bin/zsh
-vektor,tty5,10:05,2.00s,0.08s,0.08s,-bash
+vektor,tty1,10:08,4:08m,7:07,0.02s,/usr/bin/startplasma-x11
+vektor,pts/0,10:08,2:34m,0.00s,12.52s,kded5
+vektor,tty5,10:05,2:35m,0.08s,0.08s,-bash
+vektor,pts/1,10:08,0.00s,9.49s,0.00s,w,-f
+vektor,pts/2,10:40,45:35,2.39s,1.97s,/bin/zsh

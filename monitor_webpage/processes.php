@@ -43,7 +43,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <link href="css/styles.css" rel="stylesheet" type="text/css">
-    <title>Machines monitor</title>
+    <title>Process monitor</title>
   </head>
 
   <body>
@@ -53,7 +53,7 @@
 
  
 
-        <h3>Machines</h3>
+        <h3>Process</h3>
 
 
         <table style =" border-spacing: 18px; clear:both;">

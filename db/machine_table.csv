@@ -1,2 +1,2 @@
-echo mac_addr,need_testing,is_up,ip_addr,name,cpu,memory
-7a:79:00:00:00:00,true,true,192.168.0.32,quartz,0,135.3
+mac_addr,need_testing,is_up,ip_addr,host_name,cpu_usage,mem_usage
+7a:79:00:00:00:00,1,1,192.168.0.32,quartz,0,63
