@@ -344,12 +344,12 @@ done
 A second implementation not detailed here but with higher scalability and robustness could be implemented by 2 modules: a centralized DB, which runs at the monitor server; and a daemon running in each client machine to be monitored. The last one waits for a GET request. When it's signalized, it answers, DB machine/API, retrieving a JSON with the previously listed information.
 
 # 2)
-The decision if a task must be automated or not relies on the difference of time cost to automate it, versus the accumulated time consumed on repeating this task. If a task isn't usual or doesn’t consume much time, users can even don't use the automation. So, when working with a daily scheduled task, which spends more than 1 minute, 5 times is enough to decide whether implement automation or not.
+To know whether the decision must be automated or not relies on the difference of time cost to automate it versus the accumulated time consumed on repeating this task. If a task isn't usual or doesn’t consume much time users can even don't want to use the automation. So, when working with a daily scheduled task, which spends more than 1 minute, 5 times is enough to decide whether implement automation or not.
 
 
 # 3) Containers
 
-I would proceed using containers, to encapsulate the application to the compatible kernel. The migration plan would be installing docker, set up MySQL8 in the container. The former database needs to be backed-up, exporting all the data to inside the database inside the container. Backing up the production machine and then updating its OS is also an alternative.
+I would proceed using containers to encapsulate the application to the compatible kernel. The migration plan would be installing docker, setting up MySQL8 in the container. The former database needs to be backed-up, exporting all the data to inside the database inside the container. Backing up the production machine and then updating its OS is also an alternative.
 
 <br /> 
 <br /> 
@@ -361,7 +361,7 @@ PART 2: Python
 # 4)
 
 
-A password validator was implemented to find all the characters which match the pattern corresponding to input requirements. After filter characters, join all of them and check if it matches with the specified length. The source code and unit tests are at the pass validator directory.
+A password validator was implemented to  find all the matching characters to the pattern, corresponding to input requirements. After filter characters, join all of them and check if it matches with the specified length. The source code and unit tests are at the pass validator directory.
 
 /pass_validator/pass_validator.py:
 ```
@@ -459,7 +459,7 @@ PART 3: Quality Assurance
 =============================
 5.)
 =============================
-The main way to guarantee that no new code can affect already implemented features is by using automated tests. They can be unit tests or automated structural tests. They must be executed whenever a new commit is done to the main branch.
+The main way to guarantee that no new code cannot affect already implemented features is by using automated tests. They can be unit tests or automated structural tests. They must be executed whenever a new commit is done to the main branch.
 
 
 <br /> 
@@ -470,19 +470,21 @@ PART 4: Logic, Common Sense and Scripting
 6.)
 =============================
 
-A simple algorithm was chosen to control the elevator. It assumes  a uniform distribution of requests and destinations between the floors:
+A simple algorithm was chosen to control the elevator. It assumes an uniform distribution of requests and destinations between the floors:
  
-- The elevator has a capacity of X peoples.
-- As long as there’s someone inside or ahead of the elevator who wants to go in the current direction, keep heading in that direction.
+- The elevator has a capacity of X people.
+  
+- As long as there’s someone inside the elevator or in its direction, who wants to go in the current direction, keep heading in that direction.
+
  
 - Once the elevator has exhausted the requests in its current direction, switch directions if there’s a request in the other direction, if it's not completely loaded yet. Otherwise, stop and wait for a call.
  
 Test 0: No one requested. Stay on the current floor.   
 Test 1: One person requesting elevator. The elevator is idle, then it must go immediately to the requested floor. 
-Test 2: One person requesting an elevator already in use. The elevator is in the way of the requested floor, it must stop at the requested floor.   
+Test 2: One person requesting an elevator already in use. The elevator is on the way to the requested floor, it must stop at the requested floor.   
 Test 3: One person requesting an elevator already in use. If the elevator is NOT in the way of the requested floor, so it must switch direction to the requested floor.   
-Test 4: X+1 persons requesting elevator to go to first floor. It must attend X peoples THEN fetch the last one.   
-Test 5: X persons current in the elevator. It must stop whenever it reaches a requested destination floor.   
+Test 4: X+1 people requesting elevator to go to the first floor. It must attend X peoples and then fetch the last one.   
+Test 5: X people currently in the elevator. It must stop whenever it reaches a requested destination floor.   
 
 
 <br /> 
@@ -491,13 +493,12 @@ Test 5: X persons current in the elevator. It must stop whenever it reaches a re
 7.)
 =============================
 a)
-It's an implementation of the insertion sort algorithm. It sorts in crescent order. And returns the sorted array.
+It's an implementation of the insertion sort algorithm. It sorts in crescent order and returns the sorted array.
 
 b) Output:
 ```
 5 6 8 12 34 35 38 44 55
 ```
 
-c) The while loop shifts a large amount of the array whenever finds a smaller $val. It has a complexity order of O(n²) of swaps and comparisons. It can be improved by:
-is the inner loop, where is comparing each element with the selected element by the outer loop $var. Since the inner loop covers the sorted section of the list, it is possible to replace this linear search with a binary search method.
+c) The while loop shifts a large amount of the array whenever it finds a smaller $val. It has a complexity order of O(n²) of swaps and comparisons. It can be improved in the inner loop, thats compares each element with the selected element by the outer loop $var. Since the inner loop covers the sorted section of the list, it's possible to replace this linear search with a binary search method.
 
