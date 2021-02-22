@@ -474,7 +474,7 @@ A simple algorithm was chosen to control the elevator. It assumes  a uniform dis
  
 - As long as there’s someone inside or ahead of the elevator who wants to go in the current direction, keep heading in that direction.
 
-- Once the elevator has exhausted the requests in its current direction, switch directions if there’s a request in the other direction, if it's not completely loaded yet. Otherwise, stop and wait for a call.
+- Once the elevator has exhausted the requests in it's current direction, switch directions if there’s a request in the other direction, if it's not completely loaded yet. Otherwise, stop and wait for a call.
 
 Test 0: No one requested. Stay on the current floor.  
 Test 1: One person requesting elevator. The elevator is idle, then it must go immediately to the requested floor.  
