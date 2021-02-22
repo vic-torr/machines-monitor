@@ -476,22 +476,12 @@ A simple algorithm was chosen to control the elevator. It assumes  a uniform dis
 
 - Once the elevator has exhausted the requests in its current direction, switch directions if there’s a request in the other direction, if it's not completely loaded yet. Otherwise, stop and wait for a call.
 
-Test 0: No one requested. Stay at current floor.
-
-Test 1: 
-One person requesting elevator. The elevator is idle, then it must go immediately to the requested floor.
-
-Test 2: 
-One person requesting elevator already in use. The elevator is in the way of requested floor, it must stop at the requested floor.
-
-Test 3: 
-One person requesting elevator already in use. If the elevator is NOT in the way of requested floor, so it must switch direction to the requested floor.
-
-Test 4: 
-X+1 persons requesting elevator to go to ground floor. It must attend X peoples THEN fetch the last one.
-
-Test 5: 
-X persons current in the elevator. It must stop whenever reaches a requested destination floor.
+Test 0: No one requested. Stay on the current floor.  
+Test 1: One person requesting elevator. The elevator is idle, then it must go immediately to the requested floor.  
+Test 2: One person requesting an elevator already in use. The elevator is in the way of the requested floor, it must stop at the requested floor.  
+Test 3: One person requesting an elevator already in use. If the elevator is NOT in the way of the requested floor, so it must switch direction to the requested floor.  
+Test 4: X+1 persons requesting elevator to go to first floor. It must attend X peoples THEN fetch the last one.  
+Test 5: X persons current in the elevator. It must stop whenever it reaches a requested destination floor.  
 
 
 <br /> 
@@ -507,5 +497,5 @@ b) Output:
 5 6 8 12 34 35 38 44 55
 ```
 
-c) The while loop shifts a large amount of the array whenever finds a smaller $val. It has complexity order of O(n²) of swaps and comparisons. It can be improved by:
-is the inner loop, where is comparing each element with the selected element by the outer loop $var. Since the inner loop covers the sorted section of list, is possible to replace this linear search by a binary search method. 
+c) The while loop shifts a large amount of the array whenever finds a smaller $val. It has a complexity order of O(n²) of swaps and comparisons. It can be improved by:
+is the inner loop, where is comparing each element with the selected element by the outer loop $var. Since the inner loop covers the sorted section of the list, is possible to replace this linear search with a binary search method. 
