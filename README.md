@@ -340,7 +340,7 @@ done
  - A statistics that was stored is the CPU time consumption of each process. It's important
 to monitor remote machines which was left at a prolonged processing job.
 
-## Another possible implementation
+## Alternative implementation
 
 A second implementation not detailed here but with higher scalability and robustness could be implemented this way:
 It can be implemented by a 2 modules: a centralized db, which runs at the monitor server; and a daemon running in each client machine to be monitored. The last one waits for a GET request. When it's signalized, it answer, DB machine/API, retrieving a JSON with the previous listed information.
