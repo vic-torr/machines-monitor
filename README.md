@@ -4,24 +4,24 @@ PART 1: Web Development & Automation
 
 
 ## 1)
-A database model can be designed by a ER model. The machine can be modeled as strong entities, since each one has a unique identifier, which is the MAC address. The process table, and users tables are weak entities, with cardinality 1:1 to the machines. It's because they haven't a own description identifier.
-It's possible to list the most relevant attributes to store and monitor, of each entity:
+A database model can be designed by an ER model. The machine can be model as strong entities, since each one has an unique identifier, the MAC address. The process table, and users tables are weak entities with cardinality 1:1 to the machines. Because they don't have an own description identifier.
+It's possible to list the most relevant attributes to store and monitor of each entity:
 ## Machine
   
 MAC addr, IP, host Name, Is up, Users table, Running Process table, total CPU usage, total  Memory Usage.
 
 ## Process table:
-PID, Process name, CPU usage, Memory usage, cpu time usage by process, command, machine_id, process_table_id
+PID, Process name, CPU usage, Memory usage, CPU time usage by process, command, machine_id, process_table_id
 
 ## User:
-User name, cpu usage, login at machine, idle, terminal/instance of acess, users table id, machine id.
+User name, CPU usage, login at machine, idle, terminal/instance of access, users table id, machine id.
 
 ![ER](./imgs/ER_MODEL.png)
 
 
 b) 
 The machines will be inserted in the database by importing CSV files corresponding to each one of them. 
-There will be 3 files: one retrieving data of a single machine, another retrieving its process and a last one retrieving its users with it's statistics.
+There will be 3 files: one retrieving data of a single machine, another retrieving it's process and a last one retrieving it's users with statistics.
 Those CSV tables will be retrieved by a background process detailed ahead.
 ## Sql scripit updates database with csv files data:
 - /db/insert.sql
@@ -202,13 +202,13 @@ IGNORE 1 ROWS;
 
 c) 
 
-A simpler implementation, but less scalable and works mostly to local network: the monitor machine update the machines periodically by a poll. To each machine, is executed a bash script which connects by ssh, execute each command and retrieve a txt report file with each one of them. After get all files, a parse must be done, and then updating the DB.  
-
-The pooling background process it can be implemented by the following commands:  
+A simpler implementation, but less scalable and works mostly to the local network: the monitor machine updates the machines periodically by a poll. To each machine, is executed a bash script that connects by ssh, executes each command, and retrieves a CSV report file with each one of them. After getting all files, a parse must be done and then updating the DB.
+The pooling background process can be implemented by the following commands:
+ 
 
 
 ## Local network machines:
-The list of current machines connected at local network can be retrieved by:  
+The list of current machines connected to the local network can be retrieved by:
 ```
 arp -vn
 ```
