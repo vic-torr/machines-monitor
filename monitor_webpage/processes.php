@@ -3,37 +3,26 @@
     $connection = mysqli_connect("localhost", "vektor", "");
 
     // prepare sql
-    $sql = "SELECT * FROM machinesdb.machines";
+    $sql = "SELECT * FROM machinesdb.machines.processes";
 
     // find username
-    $result = mysqli_query($connection, $sql);
+    $result = mysqli_query($connection, "SELECT * FROM machinesdb.processes");
 
-    //$row = mysqli_fetch_array($result);
-    $row = $sql;
     // get number of rows in the table
     $rows_number = mysqli_num_rows($result);
-
-    // create two arrays to store data
-    $symbol_array = array();
-    $shares_array = array();
 
     // fill the arrays with the rows data of stocks
     for ($i = 0; $i<$rows_number; $i++ )
     {
         $row = mysqli_fetch_array($result);
-        $mac_array[$i] = $row["mac_addr"];
-        $testing[$i] = $row["need_testing"];
-        $is_up[$i] = $row["is_up"];
-        $ip[$i] = $row["ip"];
-        $name_array[$i] = $row["host_name"];
-        $up_array[$i] = $row["is_up"];
-        $cpu_array[$i] = $row["cpu"];
-        $mem_array[$i] = $row["memory"];
-
+        $pid[$i] = $row["pid"];
+        $process_name[$i] = $row["process_name"];
+        $cpu[$i] = $row["cpu"];
+        $ram[$i] = $row["ram"];
+        $process_time[$i] = $row["process_time"];
+        $user_name[$i] = $row["user_name"];
+        $command[$i] = $row["command"];
     }
-    
-
-
 ?>
 
 <!DOCTYPE html>
@@ -45,42 +34,32 @@
     <link href="css/styles.css" rel="stylesheet" type="text/css">
     <title>Process monitor</title>
   </head>
-
   <body>
-
-
     <div id="middle">  
-
- 
-
         <h3>Process</h3>
-
-
         <table style =" border-spacing: 18px; clear:both;">
             <tr>
-                <th>MAC</th>      
-                <th>Testing</th>        
-                <th>power on  </th>          
-                <th>IP</th>         
-                <th>host name </th>        
-                <th>CPU</th>       
-                <th>Memory</th>
-                <th>Users</th>       
-                <th>Processes</th>       
-         
+                <th>PID</th>      
+                <th>ProcessName</th>        
+                <th>CPU  </th>          
+                <th>Memory</th>         
+                <th>ProcessTime </th>        
+                <th>UserName</th>       
+                <th>Command</th>    
+                <th>Machine</th>    
             </tr>
             <?php for ($i = 0; $i < $rows_number; $i++) : ?>
             
             <tr>
-                <td> <?= $mac_array[$i]; ?> </td>
-                <td> <?= $testing[$i]; ?> </td>
-                <td> <?= $is_up[$i]; ?> </td>
-                <td> <?= $ip[$i]; ?> </td>
-                <td> <?= $name_array[$i]; ?> </td>
-                <td> <?= $cpu_array[$i]; ?> </td>
-                <td> <?= $mem_array[$i]; ?> </td>
+                <td> <?= $pid[$i]; ?> </td>
+                <td> <?= $process_name[$i]; ?> </td>
+                <td> <?= $cpu[$i]; ?> </td>
+                <td> <?= $ram[$i]; ?> </td>
+                <td> <?= $process_time[$i]; ?> </td>
+                <td> <?= $user_name[$i]; ?> </td>
+                <td> <?= $command[$i]; ?> </td>
+                <td>  <a href="/index.php">Machine</a> </td>
             </tr>
-
             <?php endfor ?>
         </table>
     </div>

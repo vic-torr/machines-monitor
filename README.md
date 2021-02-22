@@ -15,12 +15,18 @@ MAC addr, IP, host Name, Status, Is up, Logged Users, Running Process table, CPU
 PID, Process name, CPU usage, Memory usage, time usage, command
 
 ## User:
-User name, cpu usage, login at machine, idle 
+User name, cpu usage, login at machine, idle.
 
 ![ER](./imgs/ER_MODEL.png)
 
 
 b) 
+## Machines webpage:
+![ER](./imgs/machines_web.png)
+## Process webpage:
+![ER](./imgs/process_web.png)
+## Users webpage:
+![ER](./imgs/users_web.png)
 
 
 c) 
@@ -30,7 +36,7 @@ A simpler implementation, but less scalable and works mostly to local nework: th
 The pooling background process it can be implemented by the following commands:  
 
 
-Process to Comands:
+## Local network machines:
 The list of current machines connected at local network can be retrieved by:  
 ```
 arp -vn
@@ -48,7 +54,6 @@ w -f| awk '(NR>1)' | tr -s '[:blank:]' ',' > users.csv
 ps -e -o %p, -o fname -o,%C, -o %mem, -o ,%x -o,%U, -o %c | sed 's/^.//g' > process.csv
 ```
 ![ER](./imgs/process_csv.png)
-
 
 
 

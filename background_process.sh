@@ -12,8 +12,8 @@ function trap_ctrlc() {
 mysql -u vektor < machinesdb_table_drop.sql
 mysql -u vektor < machinesdb_table_create.sql
 
-machines_list={192.168.1.32, 192.168.1.52}
-
+machines_list={quartz, lambda}
+need_testing={1,0}
 while :
 do
 
@@ -30,11 +30,8 @@ ssh -i "{machine}_key.pem" $machine /bin/bash << EOF
     # Get machine stats
     
     mac_addr=$(ifconfig | grep -m1 -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}')
-
     ip_addr=$(ifconfig | grep -A 3 "wlp2s0" |grep -m2 -o -E "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" | head -1)
-
     mem_usage=$(awk -F"," '{x+=$3}END{print x}' ./process.csv)
-
     cpu_usage=$(awk -F"," '{x+=$2}END{print x}' ./process.csv)
     need_testing=1
     is_up=1
