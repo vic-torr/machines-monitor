@@ -203,7 +203,7 @@ IGNORE 1 ROWS;
 
 c) 
 
-A simpler implementation, but less scalable and works mostly to the local network: the monitor machine updates the machines periodically by a poll. To each machine, is executed a bash script that connects by ssh, executes each command, and retrieves a CSV report file with each one of them. After getting all files, a parse must be done and then updating the DB.
+A simpler implementation, but less scalable and works mostly to the local network: the monitor server fetches machines updates periodically by a poll. In each machine, is executed a bash script that connects by ssh, executes each command, and retrieves a CSV report file with each one of them. After getting all files, a parse must be done and then updating the DB.
 The pooling background process can be implemented by the following commands:
  
 
@@ -277,7 +277,7 @@ echo $mac_addr,$need_testing,$is_up,$ip_addr,$host_name,$cpu_usage,$mem_usage >>
 
 
 ## d) Background process
-The background process required is stored at background_process.sh. It uses ssh to connect to each machine, execute the formerly listed commands, and retrieve the table of the machine, using ssh copy "scp":
+The background process required is stored at background_process.sh. It uses ssh to connect to each machine, execute the formerly listed commands and retrieve the respective table of the machine, using ssh copy "scp":
 - /background_process.sh
 ```
 #!/bin/bash
@@ -337,14 +337,14 @@ done
 
 ## Another important statistics
 
-- A statistic that was stored is the CPU time consumption of each process. It's important to monitor remote machines which were left at a prolonged processing job.
+- The statistic that was also stored is the CPU time consumption of each process. It's important to monitor remote machines lefted at a prolonged processing job.
 
 ## Alternative implementation
 
-A second implementation not detailed here but with higher scalability and robustness could be implemented by 2 modules: a centralized DB, which runs at the monitor server; and a daemon running in each client machine to be monitored. The last one waits for a GET request. When it's signalized, it answers, DB machine/API, retrieving a JSON with the previously listed information.
+A second implementation not detailed here but with higher scalability and robustness could be implemented by 2 modules: a centralized DB, which runs at the monitor server; and a daemon running in each client machine to be monitored. The last one waits for a GET request. When it's signalized it answers, by DB machine/API, posting a JSON with the previously listed information.
 
 # 2)
-To know whether the decision must be automated or not relies on the difference of time cost to automate it versus the accumulated time consumed on repeating this task. If a task isn't usual or doesn’t consume much time users can even don't want to use the automation. So, when working with a daily scheduled task, which spends more than 1 minute, 5 times is enough to decide whether implement automation or not.
+To know whether the decision must be automated or not relies on the difference of time cost to automate it versus the accumulated time consumed on repeating this task. If a task isn't usual or doesn’t consume much time users can even choose not to use the automation. So, when working with a daily scheduled task that spends more than 1 minute, 5 times is enough to decide whether implement automation or not.
 
 
 # 3) Containers
