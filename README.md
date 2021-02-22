@@ -4,25 +4,26 @@ PART 1: Web Development & Automation
 
 
 ## 1)
-A database model can be designed by an ER model. The machine can be model as strong entities, since each one has an unique identifier, the MAC address. The process table, and users tables are weak entities with cardinality 1:1 to the machines. Because they don't have an own description identifier.
+A database model can be designed by an ER model. The machine can be model as strong entities since each one has a unique identifier, the MAC address. The process table and users tables are weak entities with cardinality 1:1 to the machines. Because they don't have an own description identifier.
 It's possible to list the most relevant attributes to store and monitor of each entity:
 ## Machine
-  
-MAC addr, IP, host Name, Is up, Users table, Running Process table, total CPU usage, total  Memory Usage.
-
+ MAC addr, IP, hostName, Is up, Users table, Running Process table, total CPU usage, total  Memory Usage.
+ 
 ## Process table:
 PID, Process name, CPU usage, Memory usage, CPU time usage by process, command, machine_id, process_table_id
-
+ 
 ## User:
-User name, CPU usage, login at machine, idle, terminal/instance of access, users table id, machine id.
+Username, CPU usage, login at the machine, idle, terminal/instance of access, users table id, machine id.
+
 
 ![ER](./imgs/ER_MODEL.png)
 
 
-b) 
-The machines will be inserted in the database by importing CSV files corresponding to each one of them. 
-There will be 3 files: one retrieving data of a single machine, another retrieving it's process and a last one retrieving it's users with statistics.
+b)
+The machines will be inserted into the database by importing CSV files corresponding to each one of them.
+There will be 3 files: one retrieving data of a single machine, another retrieving its process, and the last one retrieving its users with statistics.
 Those CSV tables will be retrieved by a background process detailed ahead.
+
 ## Sql scripit updates database with csv files data:
 - /db/insert.sql
 
@@ -336,18 +337,19 @@ done
 
 ## Another important statistics
 
-- A statistic that was stored in the CPU time consumption of each process. It's important to monitor remote machines which were left at a prolonged processing job.
+- A statistic that was stored is the CPU time consumption of each process. It's important to monitor remote machines which were left at a prolonged processing job.
 
 ## Alternative implementation
 
-A second implementation not detailed here but with higher scalability and robustness could be implemented this way: It can be implemented by 2 modules: a centralized DB, which runs at the monitor server; and a daemon running in each client machine to be monitored. The last one waits for a GET request. When it's signalized, it answers, DB machine/API, retrieving a JSON with the previously listed information.
+A second implementation not detailed here but with higher scalability and robustness could be implemented by 2 modules: a centralized DB, which runs at the monitor server; and a daemon running in each client machine to be monitored. The last one waits for a GET request. When it's signalized, it answers, DB machine/API, retrieving a JSON with the previously listed information.
+
 # 2)
 The decision if a task must be automated or not relies on the difference of time cost to automate it, versus the accumulated time consumed on repeating this task. If a task isn't usual or doesn’t consume much time, users can even don't use the automation. So, when working with a daily scheduled task, which spends more than 1 minute, 5 times is enough to decide whether implement automation or not.
 
 
 # 3) Containers
 
-I would proceed using containers, to encapsulate the application to the compatible kernel. The migration plan would be installing docker, set up MySQL8 in the container. The former database needs to be backed-up, exporting all the data to inside the database inside the container.
+I would proceed using containers, to encapsulate the application to the compatible kernel. The migration plan would be installing docker, set up MySQL8 in the container. The former database needs to be backed-up, exporting all the data to inside the database inside the container. Backing up the production machine and then updating its OS is also an alternative.
 
 <br /> 
 <br /> 
@@ -469,19 +471,18 @@ PART 4: Logic, Common Sense and Scripting
 =============================
 
 A simple algorithm was chosen to control the elevator. It assumes  a uniform distribution of requests and destinations between the floors:
-
-- The elevator has a capacity of X peoples.
  
+- The elevator has a capacity of X peoples.
 - As long as there’s someone inside or ahead of the elevator who wants to go in the current direction, keep heading in that direction.
-
-- Once the elevator has exhausted the requests in it's current direction, switch directions if there’s a request in the other direction, if it's not completely loaded yet. Otherwise, stop and wait for a call.
-
-Test 0: No one requested. Stay on the current floor.  
-Test 1: One person requesting elevator. The elevator is idle, then it must go immediately to the requested floor.  
-Test 2: One person requesting an elevator already in use. The elevator is in the way of the requested floor, it must stop at the requested floor.  
-Test 3: One person requesting an elevator already in use. If the elevator is NOT in the way of the requested floor, so it must switch direction to the requested floor.  
-Test 4: X+1 persons requesting elevator to go to first floor. It must attend X peoples THEN fetch the last one.  
-Test 5: X persons current in the elevator. It must stop whenever it reaches a requested destination floor.  
+ 
+- Once the elevator has exhausted the requests in its current direction, switch directions if there’s a request in the other direction, if it's not completely loaded yet. Otherwise, stop and wait for a call.
+ 
+Test 0: No one requested. Stay on the current floor.   
+Test 1: One person requesting elevator. The elevator is idle, then it must go immediately to the requested floor. 
+Test 2: One person requesting an elevator already in use. The elevator is in the way of the requested floor, it must stop at the requested floor.   
+Test 3: One person requesting an elevator already in use. If the elevator is NOT in the way of the requested floor, so it must switch direction to the requested floor.   
+Test 4: X+1 persons requesting elevator to go to first floor. It must attend X peoples THEN fetch the last one.   
+Test 5: X persons current in the elevator. It must stop whenever it reaches a requested destination floor.   
 
 
 <br /> 
@@ -490,7 +491,7 @@ Test 5: X persons current in the elevator. It must stop whenever it reaches a re
 7.)
 =============================
 a)
-It's implementation of insertion sort algorithm. It sorts in crescent order. And returns the sorted array.
+It's an implementation of the insertion sort algorithm. It sorts in crescent order. And returns the sorted array.
 
 b) Output:
 ```
@@ -498,4 +499,5 @@ b) Output:
 ```
 
 c) The while loop shifts a large amount of the array whenever finds a smaller $val. It has a complexity order of O(n²) of swaps and comparisons. It can be improved by:
-is the inner loop, where is comparing each element with the selected element by the outer loop $var. Since the inner loop covers the sorted section of the list, is possible to replace this linear search with a binary search method. 
+is the inner loop, where is comparing each element with the selected element by the outer loop $var. Since the inner loop covers the sorted section of the list, it is possible to replace this linear search with a binary search method.
+
