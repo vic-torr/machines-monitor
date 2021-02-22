@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>1&rpar;</title>
+        <style>
+</style>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+<link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item { list-style-type: none; } .task-list-item-checkbox { margin-left: -20px; vertical-align: middle; }
+</style>
+        
+        <script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
+        
+    </head>
+    <body class="vscode-body vscode-light">
+        <p>Victor Moraes</p>
+<h1 id="part-1-web-development--automation">PART 1: Web Development &amp; Automation</h1>
+<h2 id="1">1)</h2>
+<p>A database model can be designed by an ER model. The machine can be model as strong entities since each one has a unique identifier, the MAC address. The process table and users tables are weak entities with cardinality 1:1 to the machines. Because they don't have an own description identifier.
+It's possible to list the most relevant attributes to store and monitor of each entity:</p>
+<h2 id="machine">Machine</h2>
+<p>MAC addr, IP, hostName, Is up, Users table, Running Process table, total CPU usage, total  Memory Usage.</p>
+<h2 id="process-table">Process table:</h2>
+<p>PID, Process name, CPU usage, Memory usage, CPU time usage by process, command, machine_id, process_table_id</p>
+<h2 id="user">User:</h2>
+<p>Username, CPU usage, login at the machine, idle, terminal/instance of access, users table id, machine id.</p>
+<p><img src="file:////media/vektor/Data/Planning/machines-monitor/imgs/ER_MODEL.png" alt="ER"></p>
+<p>b)
+The machines will be inserted into the database by importing CSV files corresponding to each one of them.
+There will be 3 files: one retrieving data of a single machine, another retrieving its process, and the last one retrieving its users with statistics.
+Those CSV tables will be retrieved by a background process detailed ahead.</p>
+<h2 id="sql-scripit-updates-database-with-csv-files-data">Sql scripit updates database with csv files data:</h2>
+<ul>
+<li>/db/insert.sql</li>
+</ul>
+<pre><code><code><div>LOAD DATA LOCAL INFILE './machine_table.csv' 
+INTO TABLE machinesdb.machines
+FIELDS TERMINATED BY ',' 
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS; 
+
+
+LOAD DATA LOCAL INFILE './process.csv' 
+INTO TABLE machinesdb.processes
+FIELDS TERMINATED BY ',' 
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS; 
+
+
+LOAD DATA LOCAL INFILE './users.csv' 
+INTO TABLE machinesdb.users
+FIELDS TERMINATED BY ',' 
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS; 
+</div></code></code></pre>
+<ul>
+<li>Database snapshot:
+<img src="file:////media/vektor/Data/Planning/machines-monitor/imgs/process_db.png" alt="ER"></li>
+</ul>
+<h2 id="machines-monitor-index-page-source-code">Machines monitor index page source code:</h2>
+<ul>
+<li>/monitor_webpage/index.php:</li>
+</ul>
+<pre><code><code><div>&lt;?php
+
+    $connection = mysqli_connect(&quot;localhost&quot;, &quot;vektor&quot;, &quot;&quot;);
+    // prepare sql
+    $sql = &quot;SELECT * FROM machinesdb.machines&quot;;
+    $result = mysqli_query($connection, $sql);
+    // get number of rows in the table
+    $rows_number = mysqli_num_rows($result);
+    // fill the arrays with the rows data of stocks
+    for ($i = 0; $i&lt;$rows_number; $i++ )
+    {
+        $row = mysqli_fetch_array($result);
+        $mac_array[$i] = $row[&quot;mac_addr&quot;];
+        $testing[$i] = $row[&quot;need_testing&quot;];
+        $is_up[$i] = $row[&quot;is_up&quot;];
+        $ip[$i] = $row[&quot;ip&quot;];
+        $name_array[$i] = $row[&quot;host_name&quot;];
+        $up_array[$i] = $row[&quot;is_up&quot;];
+        $cpu_array[$i] = $row[&quot;cpu&quot;];
+        $mem_array[$i] = $row[&quot;memory&quot;];
+    }
+?&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html;charset=utf-8&quot;&gt;
+    &lt;link href=&quot;css/styles.css&quot; rel=&quot;stylesheet&quot; type=&quot;text/css&quot;&gt;
+    &lt;title&gt;Machines monitor&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div id=&quot;middle&quot;&gt;  
+        &lt;h3&gt;Machines&lt;/h3&gt;
+        &lt;table style =&quot; border-spacing: 18px; clear:both;&quot;&gt;
+            &lt;tr&gt;
+                &lt;th&gt;MAC&lt;/th&gt;      
+                &lt;th&gt;Testing&lt;/th&gt;        
+                &lt;th&gt;power on  &lt;/th&gt;          
+                &lt;th&gt;IP&lt;/th&gt;         
+                &lt;th&gt;host name &lt;/th&gt;        
+                &lt;th&gt;CPU&lt;/th&gt;       
+                &lt;th&gt;Memory&lt;/th&gt;
+                &lt;th&gt;Users&lt;/th&gt;       
+                &lt;th&gt;Processes&lt;/th&gt;       
+            &lt;/tr&gt;
+            &lt;?php for ($i = 0; $i &lt; $rows_number; $i++) : ?&gt;  
+            &lt;tr&gt;
+                &lt;td&gt; &lt;?= $mac_array[$i]; ?&gt; &lt;/td&gt;
+                &lt;td&gt; &lt;?= $testing[$i]; ?&gt; &lt;/td&gt;
+                &lt;td&gt; &lt;?= $is_up[$i]; ?&gt; &lt;/td&gt;
+                &lt;td&gt; &lt;?= $ip[$i]; ?&gt; &lt;/td&gt;
+                &lt;td&gt; &lt;?= $name_array[$i]; ?&gt; &lt;/td&gt;
+                &lt;td&gt; &lt;?= $cpu_array[$i]; ?&gt; &lt;/td&gt;
+                &lt;td&gt; &lt;?= $mem_array[$i]; ?&gt; &lt;/td&gt;
+                &lt;td&gt;  &lt;a href=&quot;/users.php&quot;&gt;Users&lt;/a&gt;  &lt;/td&gt;
+                &lt;td&gt;  &lt;a href=&quot;/processes.php&quot;&gt;Process&lt;/a&gt; &lt;/td&gt;
+            &lt;/tr&gt;
+            &lt;?php endfor ?&gt;
+        &lt;/table&gt;
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+
+</div></code></code></pre>
+<ul>
+<li>Query used to retrieve the machines Table:</li>
+</ul>
+<pre><code><code><div>    $sql = &quot;SELECT * FROM machinesdb.machines&quot;;
+</div></code></code></pre>
+<h2 id="machines-webpage">Machines webpage:</h2>
+<p><img src="file:////media/vektor/Data/Planning/machines-monitor/imgs/machines_web.png" alt="ER"></p>
+<h2 id="process-monitor-page-source-code">Process monitor page source code:</h2>
+<ul>
+<li>/monitor_webpage/process.php:</li>
+</ul>
+<pre><code><code><div>&lt;?php
+    $connection = mysqli_connect(&quot;localhost&quot;, &quot;vektor&quot;, &quot;&quot;);
+    // find username
+    $result = mysqli_query($connection, &quot;SELECT * FROM machinesdb.processes&quot;);
+    // get number of rows in the table
+    $rows_number = mysqli_num_rows($result);
+    // fill the arrays with the rows data of stocks
+    for ($i = 0; $i&lt;$rows_number; $i++ )
+    {
+        $row = mysqli_fetch_array($result);
+        $pid[$i] = $row[&quot;pid&quot;];
+        $process_name[$i] = $row[&quot;process_name&quot;];
+        $cpu[$i] = $row[&quot;cpu&quot;];
+        $ram[$i] = $row[&quot;ram&quot;];
+        $process_time[$i] = $row[&quot;process_time&quot;];
+        $user_name[$i] = $row[&quot;user_name&quot;];
+        $command[$i] = $row[&quot;command&quot;];
+    }
+?&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html;charset=utf-8&quot;&gt;
+    &lt;link href=&quot;css/styles.css&quot; rel=&quot;stylesheet&quot; type=&quot;text/css&quot;&gt;
+    &lt;title&gt;Process monitor&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div id=&quot;middle&quot;&gt;  
+        &lt;h3&gt;Process&lt;/h3&gt;
+        &lt;table style =&quot; border-spacing: 18px; clear:both;&quot;&gt;
+            &lt;tr&gt;
+                &lt;th&gt;PID&lt;/th&gt;      
+                &lt;th&gt;ProcessName&lt;/th&gt;        
+                &lt;th&gt;CPU  &lt;/th&gt;          
+                &lt;th&gt;Memory&lt;/th&gt;         
+                &lt;th&gt;ProcessTime &lt;/th&gt;        
+                &lt;th&gt;UserName&lt;/th&gt;       
+                &lt;th&gt;Command&lt;/th&gt;    
+                &lt;th&gt;Machine&lt;/th&gt;    
+            &lt;/tr&gt;
+            &lt;?php for ($i = 0; $i &lt; $rows_number; $i++) : ?&gt;
+            &lt;tr&gt;
+                &lt;td&gt; &lt;?= $pid[$i]; ?&gt; &lt;/td&gt;
+                &lt;td&gt; &lt;?= $process_name[$i]; ?&gt; &lt;/td&gt;
+                &lt;td&gt; &lt;?= $cpu[$i]; ?&gt; &lt;/td&gt;
+                &lt;td&gt; &lt;?= $ram[$i]; ?&gt; &lt;/td&gt;
+                &lt;td&gt; &lt;?= $process_time[$i]; ?&gt; &lt;/td&gt;
+                &lt;td&gt; &lt;?= $user_name[$i]; ?&gt; &lt;/td&gt;
+                &lt;td&gt; &lt;?= $command[$i]; ?&gt; &lt;/td&gt;
+                &lt;td&gt;  &lt;a href=&quot;/index.php&quot;&gt;Machine&lt;/a&gt; &lt;/td&gt;
+            &lt;/tr&gt;
+            &lt;?php endfor ?&gt;
+        &lt;/table&gt;
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+
+
+</div></code></code></pre>
+<ul>
+<li>Query used to retrieve the machines Table:</li>
+</ul>
+<pre><code><code><div>    $sql = &quot;SELECT * FROM machinesdb.process&quot;;
+</div></code></code></pre>
+<h2 id="process-webpage">Process webpage:</h2>
+<p><img src="file:////media/vektor/Data/Planning/machines-monitor/imgs/process_web.png" alt="ER"></p>
+<h2 id="users-webpage">Users webpage:</h2>
+<p><img src="file:////media/vektor/Data/Planning/machines-monitor/imgs/users_web.png" alt="ER"></p>
+<p>c)</p>
+<p>A simpler implementation, but less scalable and works mostly to the local network: the monitor server fetches machines updates periodically by a poll. In each machine, is executed a bash script that connects by ssh, executes each command, and retrieves a CSV report file with each one of them. After getting all files, a parse must be done and then updating the DB.
+The pooling background process can be implemented by the following commands:</p>
+<h2 id="local-network-machines">Local network machines:</h2>
+<p>The list of current machines connected to the local network can be retrieved by:</p>
+<pre><code><code><div>arp -vn
+</div></code></code></pre>
+<h2 id="generating-users-table">Generating users table:</h2>
+<pre><code><code><div>w -f| awk '(NR&gt;1)' | tr -s '[:blank:]' ',' &gt; users.csv
+</div></code></code></pre>
+<ul>
+<li>Generated user csv file
+<img src="file:////media/vektor/Data/Planning/machines-monitor/imgs/users_csv.png" alt="ER"></li>
+</ul>
+<h2 id="generating-process-table">Generating process table:</h2>
+<pre><code><code><div>ps -e -o %p, -o fname -o,%C, -o %mem, -o ,%x -o,%U, -o %c | sed 's/^.//g' &gt; process.csv
+</div></code></code></pre>
+<ul>
+<li>Generated process csv file
+<img src="file:////media/vektor/Data/Planning/machines-monitor/imgs/process_csv.png" alt="ER"></li>
+</ul>
+<h1 id="current-machine-statistics">Current machine statistics:</h1>
+<ul>
+<li>Total CPU usage:</li>
+</ul>
+<pre><code><code><div>cpu_usage=$(awk -F&quot;,&quot; '{x+=$2}END{print x}' ./process.csv)
+</div></code></code></pre>
+<ul>
+<li>Current machine total MEM usage:</li>
+</ul>
+<pre><code><code><div>mem_usage=$(awk -F&quot;,&quot; '{x+=$3}END{print x}' ./process.csv)
+</div></code></code></pre>
+<ul>
+<li>MAC address:</li>
+</ul>
+<pre><code><code><div>mac_addr=$(ifconfig | grep -m1 -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}')
+</div></code></code></pre>
+<ul>
+<li>IP address:</li>
+</ul>
+<pre><code><code><div>ip_addr=$(ifconfig | grep -A 3 &quot;wlp2s0&quot; |grep -m2 -o -E &quot;\b([0-9]{1,3}\.){3}[0-9]{1,3}\b&quot; | head -1)
+
+</div></code></code></pre>
+<ul>
+<li>HostName:</li>
+</ul>
+<pre><code><code><div>host_name=$(cat /proc/sys/kernel/hostname)
+</div></code></code></pre>
+<ul>
+<li>Store machines table:</li>
+</ul>
+<pre><code><code><div>echo mac_addr,need_testing,is_up,ip_addr,host_name,cpu_usage,mem_usage &gt; machine_table.csv
+echo $mac_addr,$need_testing,$is_up,$ip_addr,$host_name,$cpu_usage,$mem_usage &gt;&gt; machine_table.csv
+</div></code></code></pre>
+<ul>
+<li>Generated machine csv file:
+<img src="file:////media/vektor/Data/Planning/machines-monitor/imgs/machines_csv.png" alt="ER"></li>
+</ul>
+<h2 id="d-background-process">d) Background process</h2>
+<p>The background process required is stored at background_process.sh. It uses ssh to connect to each machine, execute the formerly listed commands and retrieve the respective table of the machine, using ssh copy &quot;scp&quot;:</p>
+<ul>
+<li>/background_process.sh</li>
+</ul>
+<pre><code><code><div>#!/bin/bash
+
+# Exit trap:
+
+function trap_ctrlc() {
+
+    exit 2
+}
+
+# Initialize tables:
+mysql -u vektor &lt; machinesdb_table_drop.sql
+mysql -u vektor &lt; machinesdb_table_create.sql
+
+machines_list={192.168.1.32, 192.168.1.52}
+
+while :
+do
+
+wait(60)
+
+for machine in {machines_list}:
+ssh -i &quot;{machine}_key.pem&quot; $machine /bin/bash &lt;&lt; EOF
+    # Get process table:
+    ps -e -o %p, -o fname -o,%C, -o %mem, -o ,%x -o,%U, -o %c | sed 's/^.//g' &gt; process.csv
+    
+    # Get users stats
+    w -f| awk '(NR&gt;1)' | tr -s '[:blank:]' ',' &gt; users.csv
+    
+    # Get machine stats
+    
+    mac_addr=$(ifconfig | grep -m1 -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}')
+
+    ip_addr=$(ifconfig | grep -A 3 &quot;wlp2s0&quot; |grep -m2 -o -E &quot;\b([0-9]{1,3}\.){3}[0-9]{1,3}\b&quot; | head -1)
+
+    mem_usage=$(awk -F&quot;,&quot; '{x+=$3}END{print x}' ./process.csv)
+
+    cpu_usage=$(awk -F&quot;,&quot; '{x+=$2}END{print x}' ./process.csv)
+    need_testing=1
+    is_up=1
+    ps_id=32
+    users_table_id=2
+    host_name=$(cat /proc/sys/kernel/hostname)
+
+    echo mac_addr,need_testing,is_up,ip_addr,host_name,cpu_usage,mem_usage &gt; machine_table.csv
+    echo $mac_addr,$need_testing,$is_up,$ip_addr,$host_name,$cpu_usage,$mem_usage &gt;&gt; machine_table.csv
+EOF
+scp -i &quot;key_file.pem&quot; $machine_addr: ~/machine_table.csv machine_table_${machine}.csv
+scp -i &quot;key_file.pem&quot; $machine_addr: ~/process.csv process_${machine}.csv
+scp -i &quot;key_file.pem&quot; $machine_addr: ~/users.csv users_${machine}.csv
+
+mysql -u vektor  &lt; insert.sql
+
+done
+</div></code></code></pre>
+<h2 id="another-important-statistics">Another important statistics</h2>
+<ul>
+<li>The statistic that was also stored is the CPU time consumption of each process. It's important to monitor remote machines lefted at a prolonged processing job.</li>
+</ul>
+<h2 id="alternative-implementation">Alternative implementation</h2>
+<p>A second implementation not detailed here but with higher scalability and robustness could be implemented by 2 modules: a centralized DB, which runs at the monitor server; and a daemon running in each client machine to be monitored. The last one waits for a GET request. When it's signalized it answers, by DB machine/API, posting a JSON with the previously listed information.</p>
+<h1 id="2">2)</h1>
+<p>To know whether the decision must be automated or not relies on the difference of time cost to automate it versus the accumulated time consumed on repeating this task. If a task isn't usual or doesn’t consume much time users can even choose not to use the automation. So, when working with a daily scheduled task that spends more than 1 minute, 5 times is enough to decide whether implement automation or not.</p>
+<h1 id="3-containers">3) Containers</h1>
+<p>I would proceed using containers to encapsulate the application to the compatible kernel. The migration plan would be installing docker, setting up MySQL8 in the container. The former database needs to be backed-up, exporting all the data to inside the database inside the container. Backing up the production machine and then updating its OS is also an alternative.</p>
+<br /> 
+<br /> 
+<h1 id="part-2-python">PART 2: Python</h1>
+<br /> 
+<h1 id="4">4)</h1>
+<p>A password validator was implemented to  find all the matching characters to the pattern, corresponding to input requirements. After filter characters, join all of them and check if it matches with the specified length. The source code and unit tests are at the pass validator directory.</p>
+<p>/pass_validator/pass_validator.py:</p>
+<pre><code><code><div>#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+import sys
+import re
+
+def validator_regex(password, requirements):
+    &quot;&quot;&quot;
+    Find all the characters who match the pattern
+    corresponding to input requirements. 
+    After filter characters, join all of them,
+    and check if it matches the specified length.
+
+
+
+    Args:
+        password (str): Password to be validated.
+        requirements (List[tuple]): List of rules.
+
+    Returns:
+        [bool]: True if password satisfies requirements.
+    &quot;&quot;&quot;
+    does_pass=True
+    for n_req in requirements:
+        (operation, comparation, length) = n_req
+        size = {
+            '&lt;': r&quot;{,&quot;+rf&quot;{length-1}&quot; + r&quot;}&quot;,
+            '&gt;': r&quot;{&quot;+ rf&quot;{length+1}&quot;+ r&quot;,}&quot;,
+            '=': r&quot;{&quot;+ rf&quot;{length},&quot;+f&quot;{length}&quot;+r&quot;}&quot;
+        }
+        req_dict = {
+            &quot;LEN&quot;: r&quot;.&quot;,
+            &quot;SPECIALS&quot;: r&quot;[^a-zA-Z0-9]&quot;,
+            &quot;LETTERS&quot;: r&quot;[a-zA-Z]&quot;,
+            &quot;NUMBERS&quot;: r&quot;[0-9]&quot;,
+        }
+        rule_char = &quot;(&quot;+req_dict[operation]+&quot;)&quot;
+        rule_size = (
+            &quot;(&quot;+req_dict[operation]+size[comparation]+&quot;)&quot;)
+        match = ''.join(re.findall(rule_char,password))
+        match = re.fullmatch(rule_size,match)
+        match = &quot;&quot; if match == None else match.string
+        does_pass = (does_pass 
+            and match != None and match != &quot;&quot;)
+           
+    return does_pass
+
+
+</div></code></code></pre>
+<p>Unit tests:</p>
+<ul>
+<li>/pass_validator/test_pass_validator.py</li>
+</ul>
+<pre><code><code><div>import pytest
+from pass_validator import validator_regex
+validator=validator_regex
+
+def test_len_gt_fail():
+    req = [('LEN', '=', 8), ('SPECIALS', '&gt;', 1)]
+    assert validator(&quot;12345678!@&quot;, req) == False
+
+def test_validator_len_eq_ok():
+    req = [('LEN', '=', 8), ('SPECIALS', '&gt;', 1)]
+    assert validator(&quot;@23a567!&quot;, req) == True
+
+def test_spectial_count():
+    req = [('LEN', '&gt;', 8), ('SPECIALS', '&gt;', 1), ('LEN', '&lt;', 10)]
+    assert validator(&quot;123@4567!&quot;, req) == True
+
+def test_validator_gtr():
+    req = [('LEN', '&gt;', 8), ('SPECIALS', '&gt;', 1), ('LEN', '&lt;', 10)]
+    assert validator(&quot;1234567981!&quot;, req) == False
+
+def test_validator_eq():
+    req = [('LEN', '&gt;', 8), ('SPECIALS', '&gt;', 1), ('LEN', '&lt;', 10)]
+    assert validator(&quot;123@567!81&quot;, req) == False
+
+def test_validator_letters():
+    req = [('LETTERS', '&gt;', 2), ('SPECIALS', '&gt;', 1), ('LEN', '&lt;', 10)]
+    assert validator(&quot;1abc@567!&quot;, req) == True
+
+</div></code></code></pre>
+<p>Validated behavior:
+<img src="file:////media/vektor/Data/Planning/machines-monitor/imgs/pytest.png" alt="Pytest"></p>
+<br /> 
+<br /> 
+<br /> 
+<h1 id="part-3-quality-assurance">PART 3: Quality Assurance</h1>
+<h1 id="5">5.)</h1>
+<p>The main way to guarantee that no new code cannot affect already implemented features is by using automated tests. They can be unit tests or automated structural tests. They must be executed whenever a new commit is done to the main branch.</p>
+<br /> 
+<br /> 
+<h1 id="part-4-logic-common-sense-and-scripting">PART 4: Logic, Common Sense and Scripting</h1>
+<h1 id="6">6.)</h1>
+<p>A simple algorithm was chosen to control the elevator. It assumes an uniform distribution of requests and destinations between the floors:</p>
+<ul>
+<li>
+<p>The elevator has a capacity of X people.</p>
+</li>
+<li>
+<p>As long as there’s someone inside the elevator or in its direction, who wants to go in the current direction, keep heading in that direction.</p>
+</li>
+<li>
+<p>Once the elevator has exhausted the requests in its current direction, switch directions if there’s a request in the other direction, if it's not completely loaded yet. Otherwise, stop and wait for a call.</p>
+</li>
+</ul>
+<p>Test 0: No one requested. Stay on the current floor.<br>
+Test 1: One person requesting elevator. The elevator is idle, then it must go immediately to the requested floor.
+Test 2: One person requesting an elevator already in use. The elevator is on the way to the requested floor, it must stop at the requested floor.<br>
+Test 3: One person requesting an elevator already in use. If the elevator is NOT in the way of the requested floor, so it must switch direction to the requested floor.<br>
+Test 4: X+1 people requesting elevator to go to the first floor. It must attend X peoples and then fetch the last one.<br>
+Test 5: X people currently in the elevator. It must stop whenever it reaches a requested destination floor.</p>
+<br /> 
+<br /> 
+<h1 id="7">7.)</h1>
+<p>a)
+It's an implementation of the insertion sort algorithm. It sorts in crescent order and returns the sorted array.</p>
+<p>b) Output:</p>
+<pre><code><code><div>5 6 8 12 34 35 38 44 55
+</div></code></code></pre>
+<p>c) The while loop shifts a large amount of the array whenever it finds a smaller $val. It has a complexity order of O(n²) of swaps and comparisons. It can be improved in the inner loop, thats compares each element with the selected element by the outer loop $var. Since the inner loop covers the sorted section of the list, it's possible to replace this linear search with a binary search method.</p>
+
+    </body>
+    </html>

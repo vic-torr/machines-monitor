@@ -1,4 +1,5 @@
- 
+Victor Moraes - victor.jf.moraes@gmail.com
+
 PART 1: Web Development & Automation
 =====================================
 
