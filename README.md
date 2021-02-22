@@ -276,8 +276,7 @@ echo $mac_addr,$need_testing,$is_up,$ip_addr,$host_name,$cpu_usage,$mem_usage >>
 
 
 ## d) Background process
-The background process required is stored at background_process.sh.
-It uses ssh to connect to each machine, execute the former listed commands, and retrieve the each table of the machine, using ssh copy "scp":
+The background process required is stored at background_process.sh. It uses ssh to connect to each machine, execute the formerly listed commands, and retrieve the table of the machine, using ssh copy "scp":
 - /background_process.sh
 ```
 #!/bin/bash
@@ -337,23 +336,18 @@ done
 
 ## Another important statistics
 
- - A statistics that was stored is the CPU time consumption of each process. It's important
-to monitor remote machines which was left at a prolonged processing job.
+- A statistic that was stored in the CPU time consumption of each process. It's important to monitor remote machines which were left at a prolonged processing job.
 
 ## Alternative implementation
 
-A second implementation not detailed here but with higher scalability and robustness could be implemented this way:
-It can be implemented by a 2 modules: a centralized db, which runs at the monitor server; and a daemon running in each client machine to be monitored. The last one waits for a GET request. When it's signalized, it answer, DB machine/API, retrieving a JSON with the previous listed information.
+A second implementation not detailed here but with higher scalability and robustness could be implemented this way: It can be implemented by 2 modules: a centralized DB, which runs at the monitor server; and a daemon running in each client machine to be monitored. The last one waits for a GET request. When it's signalized, it answers, DB machine/API, retrieving a JSON with the previously listed information.
 # 2)
-The decision if a task must be automated or not relies on the difference of time cost to automate it, versus the accumulated time consumed on repeating this task.
-If a task isn't usual, or don't consumes much time, users can even don't use the automation. 
-So, when working with daily scheduled task, which spends more than 1 minutes,  5 times is enough to decide whether implement automation or not.
+The decision if a task must be automated or not relies on the difference of time cost to automate it, versus the accumulated time consumed on repeating this task. If a task isn't usual or doesn’t consume much time, users can even don't use the automation. So, when working with a daily scheduled task, which spends more than 1 minute, 5 times is enough to decide whether implement automation or not.
 
 
+# 3) Containers
 
-# 3) Conteiners
-
-I would proceed using containers, to encapsulate the application to the compatible kernel. The migration plan would be installing docker, set up MySQL8 in the container. The former database need to be backed-up, exporting all the data to inside the database inside the container.
+I would proceed using containers, to encapsulate the application to the compatible kernel. The migration plan would be installing docker, set up MySQL8 in the container. The former database needs to be backed-up, exporting all the data to inside the database inside the container.
 
 <br /> 
 <br /> 
@@ -365,8 +359,7 @@ PART 2: Python
 # 4)
 
 
-A password validator was implemented finding all the characters which matches the pattern corresponding to input requirements. After filter characters, join all of them, and check if it matches with the specified length.
-The source code and unit tests are at pass validator directory.
+A password validator was implemented to find all the characters which match the pattern corresponding to input requirements. After filter characters, join all of them and check if it matches with the specified length. The source code and unit tests are at the pass validator directory.
 
 /pass_validator/pass_validator.py:
 ```
@@ -378,10 +371,11 @@ import re
 
 def validator_regex(password, requirements):
     """
-    Find all the characters which matches the pattern
+    Find all the characters who match the pattern
     corresponding to input requirements. 
     After filter characters, join all of them,
-    and check if it matches with the specified length.
+    and check if it matches the specified length.
+
 
 
     Args:
@@ -476,7 +470,7 @@ PART 4: Logic, Common Sense and Scripting
 
 A simple algorithm was chosen to control the elevator. It assumes  a uniform distribution of requests and destinations between the floors:
 
-- The elevator has Capacity of X peoples.
+- The elevator has a capacity of X peoples.
  
 - As long as there’s someone inside or ahead of the elevator who wants to go in the current direction, keep heading in that direction.
 
