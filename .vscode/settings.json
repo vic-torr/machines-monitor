@@ -14,5 +14,8 @@
             "username": "root",
             "password": "fdsahjkl"
         }
+    ],
+    "cSpell.enableFiletypes": [
+        "markdown"
     ]
 }

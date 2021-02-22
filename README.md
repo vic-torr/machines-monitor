@@ -31,7 +31,7 @@ b)
 
 c) 
 
-A simpler implementation, but less scalable and works mostly to local nework: the monitor machine update the machines periodically by a poll. To each machine, is executed a bash script which connects by ssh, execute each command and retrieve a txt report file with each one of them. After get all files, a parse must be done, and then updating the DB.  
+A simpler implementation, but less scalable and works mostly to local network: the monitor machine update the machines periodically by a poll. To each machine, is executed a bash script which connects by ssh, execute each command and retrieve a txt report file with each one of them. After get all files, a parse must be done, and then updating the DB.  
 
 The pooling background process it can be implemented by the following commands:  
 
@@ -184,20 +184,25 @@ mysql -u vektor  < insert.sql
 done
 ```
 
+## Another important statistics
 
+ - A statistics that was stored is the CPU time consumption of each process. It's important
+to monitor remote machines which was left at a prolonged processing job.
 
-A second but not discussed implementation, but with higher scalability and robustness could be implemented this way:
-It can be implemented by a 2 modules: a centralized db, which runs at the monitor machine; and a daemon running in each machine to be monitored. The last one waits for a GET request. When it's sinalized, it answer, executing a POST request to the DB machine/API, retrieving a JSON with the previous information.
+## Another possible implementation
+
+A second implementation not detailed here but with higher scalability and robustness could be implemented this way:
+It can be implemented by a 2 modules: a centralized db, which runs at the monitor server; and a daemon running in each client machine to be monitored. The last one waits for a GET request. When it's signalized, it answer, DB machine/API, retrieving a JSON with the previous listed information.
 # 2)
-The decision if a task must be automated or not relies on the difference of time cost to automate it, versus the acumulated time consumed on repeating this task.
-If a task isnt usual, or dont consumes much time, users can even don't use the automation. 
+The decision if a task must be automated or not relies on the difference of time cost to automate it, versus the accumulated time consumed on repeating this task.
+If a task isn't usual, or don't consumes much time, users can even don't use the automation. 
 So, when working with daily scheduled task, which spends more than 1 minutes,  5 times is enough to decide whether implement automation or not.
 
 
 
 # 3) Conteiners
 
-I would proceed using Conteiners, to encapsulate the application to the compatible kernel. The migration plan would be installing docker, set up MySQL8 in the conteiner. The former database need to be backed-up, exporting all the data to inside the database inside the conteiner.
+I would proceed using containers, to encapsulate the application to the compatible kernel. The migration plan would be installing docker, set up MySQL8 in the container. The former database need to be backed-up, exporting all the data to inside the database inside the container.
 
 <br /> 
 <br /> 
@@ -210,7 +215,7 @@ PART 2: Python
 
 
 A password validator was implemented finding all the characters which matches the pattern corresponding to input requirements. After filter characters, join all of them, and check if it matches with the specified length.
-The source code and unitests are at pass validator directory.
+The source code and unit tests are at pass validator directory.
 
 Source:
 ```
@@ -302,11 +307,11 @@ def test_validator_letters():
 <br /> 
 <br /> 
 
- PART 3: Quality Assurance
+PART 3: Quality Assurance
 =============================
 5.)
 =============================
-The main way to guarantee that no new code can affect already implemented features is by using automated tests. They can be unit tests or automated structural tests. They must be executed whenever a new commit is done to the main branch. 
+The main way to guarantee that no new code can affect already implemented features is by using automated tests. They can be unit tests or automated structural tests. They must be executed whenever a new commit is done to the main branch.
 
 
 <br /> 
@@ -317,18 +322,18 @@ PART 4: Logic, Common Sense and Scripting
 6.)
 =============================
 
-A simple algorithm was choosen to control the elevator. It assumes  a uniform distribuition of requests and destinations between the floors:
+A simple algorithm was chosen to control the elevator. It assumes  a uniform distribution of requests and destinations between the floors:
 
 - The elevator has Capacity of X peoples.
  
 - As long as there’s someone inside or ahead of the elevator who wants to go in the current direction, keep heading in that direction.
 
-- Once the elevator has exhausted the requests in its current direction, switch directions if there’s a request in the other direction, if it's not compleately loaded yet. Otherwise, stop and wait for a call.
+- Once the elevator has exhausted the requests in its current direction, switch directions if there’s a request in the other direction, if it's not completely loaded yet. Otherwise, stop and wait for a call.
 
 Test 0: No one requested. Stay at current floor.
 
 Test 1: 
-One person requesting elevator. The elevator is idle, then it must go imediately to the requested floor.
+One person requesting elevator. The elevator is idle, then it must go immediately to the requested floor.
 
 Test 2: 
 One person requesting elevator already in use. The elevator is in the way of requested floor, it must stop at the requested floor.
@@ -337,10 +342,10 @@ Test 3:
 One person requesting elevator already in use. If the elevator is NOT in the way of requested floor, so it must switch direction to the requested floor.
 
 Test 4: 
-X+1 persons requesting elevator to go to ground floor. It must atend X peoples THEN fetch the last one.
+X+1 persons requesting elevator to go to ground floor. It must attend X peoples THEN fetch the last one.
 
 Test 5: 
-X persons curret in the elevator. It must stop whenever reaches a requested destination floor.
+X persons current in the elevator. It must stop whenever reaches a requested destination floor.
 
 
 <br /> 
@@ -356,4 +361,5 @@ b) Output:
 5 6 8 12 34 35 38 44 55
 ```
 
-c) The while loop shifts a large amount of the array whenever finds a smaller $val. It has complexity order of $O(n^2)$ of swapings and comparations.
+c) The while loop shifts a large amount of the array whenever finds a smaller $val. It has complexity order of O(n²) of swaps and comparisons. It can be improved implementing a more efficient algorithm,
+like QuickSort.

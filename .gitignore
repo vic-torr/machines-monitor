@@ -130,3 +130,4 @@ dmypy.json
 
 .pdf
 machines-monitor.code-workspace
+.vscode/settings.json
