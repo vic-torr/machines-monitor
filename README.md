@@ -4,29 +4,200 @@ PART 1: Web Development & Automation
 
 
 ## 1)
-A DB model can be designed by a ER model. The machine can modeled as strong entities, by each one having a unique identifier, which is MAC address. The process table, and users tables are weak entities, with cardinality 1:1.
-
-
+A database model can be designed by a ER model. The machine can be modeled as strong entities, since each one has a unique identifier, which is the MAC address. The process table, and users tables are weak entities, with cardinality 1:1 to the machines. It's because they haven't a own description identifier.
+It's possible to list the most relevant attributes to store and monitor, of each entity:
 ## Machine
   
-MAC addr, IP, host Name, Status, Is up, Logged Users, Running Process table, CPU usage,  Memory Usage  
+MAC addr, IP, host Name, Is up, Users table, Running Process table, total CPU usage, total  Memory Usage.
 
 ## Process table:
-PID, Process name, CPU usage, Memory usage, time usage, command
+PID, Process name, CPU usage, Memory usage, cpu time usage by process, command, machine_id, process_table_id
 
 ## User:
-User name, cpu usage, login at machine, idle.
+User name, cpu usage, login at machine, idle, terminal/instance of acess, users table id, machine id.
 
 ![ER](./imgs/ER_MODEL.png)
 
 
 b) 
+The machines will be inserted in the database by importing CSV files corresponding to each one of them. 
+There will be 3 files: one retrieving data of a single machine, another retrieving its process and a last one retrieving its users with it's statistics.
+Those CSV tables will be retrieved by a background process detailed ahead.
+## Sql scripit updates database with csv files data:
+- /db/insert.sql
+
+```
+LOAD DATA LOCAL INFILE './machine_table.csv' 
+INTO TABLE machinesdb.machines
+FIELDS TERMINATED BY ',' 
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS; 
+
+
+LOAD DATA LOCAL INFILE './process.csv' 
+INTO TABLE machinesdb.processes
+FIELDS TERMINATED BY ',' 
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS; 
+
+
+LOAD DATA LOCAL INFILE './users.csv' 
+INTO TABLE machinesdb.users
+FIELDS TERMINATED BY ',' 
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS; 
+```
+- Database snapshot:
+![ER](./imgs/process_db.png)
+
+## Machines monitor index page source code:
+- /monitor_webpage/index.php:
+```
+<?php
+
+    $connection = mysqli_connect("localhost", "vektor", "");
+    // prepare sql
+    $sql = "SELECT * FROM machinesdb.machines";
+    $result = mysqli_query($connection, $sql);
+    // get number of rows in the table
+    $rows_number = mysqli_num_rows($result);
+    // fill the arrays with the rows data of stocks
+    for ($i = 0; $i<$rows_number; $i++ )
+    {
+        $row = mysqli_fetch_array($result);
+        $mac_array[$i] = $row["mac_addr"];
+        $testing[$i] = $row["need_testing"];
+        $is_up[$i] = $row["is_up"];
+        $ip[$i] = $row["ip"];
+        $name_array[$i] = $row["host_name"];
+        $up_array[$i] = $row["is_up"];
+        $cpu_array[$i] = $row["cpu"];
+        $mem_array[$i] = $row["memory"];
+    }
+?>
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <link href="css/styles.css" rel="stylesheet" type="text/css">
+    <title>Machines monitor</title>
+  </head>
+  <body>
+    <div id="middle">  
+        <h3>Machines</h3>
+        <table style =" border-spacing: 18px; clear:both;">
+            <tr>
+                <th>MAC</th>      
+                <th>Testing</th>        
+                <th>power on  </th>          
+                <th>IP</th>         
+                <th>host name </th>        
+                <th>CPU</th>       
+                <th>Memory</th>
+                <th>Users</th>       
+                <th>Processes</th>       
+            </tr>
+            <?php for ($i = 0; $i < $rows_number; $i++) : ?>  
+            <tr>
+                <td> <?= $mac_array[$i]; ?> </td>
+                <td> <?= $testing[$i]; ?> </td>
+                <td> <?= $is_up[$i]; ?> </td>
+                <td> <?= $ip[$i]; ?> </td>
+                <td> <?= $name_array[$i]; ?> </td>
+                <td> <?= $cpu_array[$i]; ?> </td>
+                <td> <?= $mem_array[$i]; ?> </td>
+                <td>  <a href="/users.php">Users</a>  </td>
+                <td>  <a href="/processes.php">Process</a> </td>
+            </tr>
+            <?php endfor ?>
+        </table>
+    </div>
+  </body>
+</html>
+
+```
+
+- Query used to retrieve the machines Table:
+```
+    $sql = "SELECT * FROM machinesdb.machines";
+```
+
 ## Machines webpage:
 ![ER](./imgs/machines_web.png)
+
+
+## Process monitor page source code:
+- /monitor_webpage/process.php:
+```
+<?php
+    $connection = mysqli_connect("localhost", "vektor", "");
+    // find username
+    $result = mysqli_query($connection, "SELECT * FROM machinesdb.processes");
+    // get number of rows in the table
+    $rows_number = mysqli_num_rows($result);
+    // fill the arrays with the rows data of stocks
+    for ($i = 0; $i<$rows_number; $i++ )
+    {
+        $row = mysqli_fetch_array($result);
+        $pid[$i] = $row["pid"];
+        $process_name[$i] = $row["process_name"];
+        $cpu[$i] = $row["cpu"];
+        $ram[$i] = $row["ram"];
+        $process_time[$i] = $row["process_time"];
+        $user_name[$i] = $row["user_name"];
+        $command[$i] = $row["command"];
+    }
+?>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <link href="css/styles.css" rel="stylesheet" type="text/css">
+    <title>Process monitor</title>
+  </head>
+  <body>
+    <div id="middle">  
+        <h3>Process</h3>
+        <table style =" border-spacing: 18px; clear:both;">
+            <tr>
+                <th>PID</th>      
+                <th>ProcessName</th>        
+                <th>CPU  </th>          
+                <th>Memory</th>         
+                <th>ProcessTime </th>        
+                <th>UserName</th>       
+                <th>Command</th>    
+                <th>Machine</th>    
+            </tr>
+            <?php for ($i = 0; $i < $rows_number; $i++) : ?>
+            <tr>
+                <td> <?= $pid[$i]; ?> </td>
+                <td> <?= $process_name[$i]; ?> </td>
+                <td> <?= $cpu[$i]; ?> </td>
+                <td> <?= $ram[$i]; ?> </td>
+                <td> <?= $process_time[$i]; ?> </td>
+                <td> <?= $user_name[$i]; ?> </td>
+                <td> <?= $command[$i]; ?> </td>
+                <td>  <a href="/index.php">Machine</a> </td>
+            </tr>
+            <?php endfor ?>
+        </table>
+    </div>
+  </body>
+</html>
+
+
+```
+- Query used to retrieve the machines Table:
+```
+    $sql = "SELECT * FROM machinesdb.process";
+```
 ## Process webpage:
 ![ER](./imgs/process_web.png)
 ## Users webpage:
 ![ER](./imgs/users_web.png)
+
 
 
 c) 
@@ -46,6 +217,8 @@ arp -vn
 ```
 w -f| awk '(NR>1)' | tr -s '[:blank:]' ',' > users.csv
 ```
+
+- Generated user csv file
 ![ER](./imgs/users_csv.png)
 
 ## Generating process table:
@@ -53,6 +226,8 @@ w -f| awk '(NR>1)' | tr -s '[:blank:]' ',' > users.csv
 ```
 ps -e -o %p, -o fname -o,%C, -o %mem, -o ,%x -o,%U, -o %c | sed 's/^.//g' > process.csv
 ```
+
+- Generated process csv file
 ![ER](./imgs/process_csv.png)
 
 
@@ -94,40 +269,16 @@ host_name=$(cat /proc/sys/kernel/hostname)
 echo mac_addr,need_testing,is_up,ip_addr,host_name,cpu_usage,mem_usage > machine_table.csv
 echo $mac_addr,$need_testing,$is_up,$ip_addr,$host_name,$cpu_usage,$mem_usage >> machine_table.csv
 ```
+- Generated machine csv file:
 ![ER](./imgs/machines_csv.png)
 
 
 
-## Sql scripit "insert.sql" updates database with csv files data:
-
-```
-LOAD DATA LOCAL INFILE './machine_table.csv' 
-INTO TABLE machinesdb.machines
-FIELDS TERMINATED BY ',' 
-LINES TERMINATED BY '\n'
-IGNORE 1 ROWS; 
-
-
-LOAD DATA LOCAL INFILE './process.csv' 
-INTO TABLE machinesdb.processes
-FIELDS TERMINATED BY ',' 
-LINES TERMINATED BY '\n'
-IGNORE 1 ROWS; 
-
-
-LOAD DATA LOCAL INFILE './users.csv' 
-INTO TABLE machinesdb.users
-FIELDS TERMINATED BY ',' 
-LINES TERMINATED BY '\n'
-IGNORE 1 ROWS; 
-```
-- Database snapshot:
-![ER](./imgs/process_db.png)
 
 ## d) Background process
 The background process required is stored at background_process.sh.
 It uses ssh to connect to each machine, execute the former listed commands, and retrieve the each table of the machine, using ssh copy "scp":
-
+- /background_process.sh
 ```
 #!/bin/bash
 
@@ -217,7 +368,7 @@ PART 2: Python
 A password validator was implemented finding all the characters which matches the pattern corresponding to input requirements. After filter characters, join all of them, and check if it matches with the specified length.
 The source code and unit tests are at pass validator directory.
 
-Source:
+/pass_validator/pass_validator.py:
 ```
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
@@ -268,7 +419,8 @@ def validator_regex(password, requirements):
 
 ```
 
-Tests:
+Unit tests:
+- /pass_validator/test_pass_validator.py
 ```
 import pytest
 from pass_validator import validator_regex
@@ -299,7 +451,7 @@ def test_validator_letters():
     assert validator("1abc@567!", req) == True
 
 ```
-
+Validated behavior:
 ![Pytest](./imgs/pytest.png)
 
 
@@ -354,12 +506,12 @@ X persons current in the elevator. It must stop whenever reaches a requested des
 7.)
 =============================
 a)
-It's implementation similar to insertion sort algorithm. It sorts in crescent order.
+It's implementation of insertion sort algorithm. It sorts in crescent order. And returns the sorted array.
 
 b) Output:
 ```
 5 6 8 12 34 35 38 44 55
 ```
 
-c) The while loop shifts a large amount of the array whenever finds a smaller $val. It has complexity order of O(n²) of swaps and comparisons. It can be improved implementing a more efficient algorithm,
-like QuickSort.
+c) The while loop shifts a large amount of the array whenever finds a smaller $val. It has complexity order of O(n²) of swaps and comparisons. It can be improved by:
+is the inner loop, where is comparing each element with the selected element by the outer loop $var. Since the inner loop covers the sorted section of list, is possible to replace this linear search by a binary search method. 
