@@ -19,9 +19,12 @@ CREATE TABLE IF NOT EXISTS machinesdb.processes (
     process_name text NOT NULL,
     cpu real NOT NULL,
     ram real NOT NULL,
-    process_time TINYTEXT NOT NULL,
     user_name TINYTEXT NOT NULL,
+    process_time TINYTEXT NOT NULL,
     command text NOT NULL
+    mac_addr TINYTEXT NOT NULL referenced machinesdb.machines(mac_addr),
+    proc_tab_id TINYTEXT NOT NULL,
+    PRIMARY KEY (proc_tab_id)
 );
 
 
@@ -34,5 +37,14 @@ CREATE TABLE IF NOT EXISTS machinesdb.users (
     idle TINYTEXT NOT NULL,
     jcpu TINYTEXT NOT NULL,
     pcpu TINYTEXT NOT NULL,
-    what TINYTEXT NOT NULL
+    what TINYTEXT NOT NULL,
+    mac_addr TINYTEXT NOT NULL referenced machinesdb.machines(mac_addr),
+    proc_tab_id TINYTEXT NOT NULL,
+    PRIMARY KEY (proc_tab_id)
 );
+
+CREATE INDEX machine_user ON machinesdb.users
+    (mac_addr);
+
+CREATE INDEX machine_process ON machinesdb.processes
+    (mac_addr);
