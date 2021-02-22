@@ -15,7 +15,6 @@ def test_spectial_count():
     req = [('LEN', '>', 8), ('SPECIALS', '>', 1), ('LEN', '<', 10)]
     assert validator("123@4567!", req) == True
 
-
 def test_validator_gtr():
     req = [('LEN', '>', 8), ('SPECIALS', '>', 1), ('LEN', '<', 10)]
     assert validator("1234567981!", req) == False
@@ -24,7 +23,6 @@ def test_validator_gtr():
 def test_validator_eq():
     req = [('LEN', '>', 8), ('SPECIALS', '>', 1), ('LEN', '<', 10)]
     assert validator("123@567!81", req) == False
-
 
 # %%
 def test_validator_letters():

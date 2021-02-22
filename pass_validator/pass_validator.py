@@ -4,10 +4,21 @@
 import sys
 import re
 
-
 def validator_regex(password, requirements):
-    combined_regex = ""
-    regex_list=list()
+    """
+    Find all the characters which matches the pattern
+    corresponding to input requirements. 
+    After filter characters, join all of them,
+    and check if it matches with the specified length.
+
+
+    Args:
+        password (str): Password to be validated.
+        requirements (List[tuple]): List of rules.
+
+    Returns:
+        [bool]: True if password satisfies requirements.
+    """
     does_pass=True
     for n_req in requirements:
         print(n_req)
@@ -25,16 +36,11 @@ def validator_regex(password, requirements):
         }
         rule_char = "("+req_dict[operation]+")"
         rule_size = "("+req_dict[operation]+size[comparation]+")"
-
-        combined_regex += rule_char + rule_size
-        regex_list.append(rule_char + rule_size)
         match = ''.join(re.findall(rule_char,password))
         match = re.fullmatch(rule_size,match)
         match = "" if match == None else match.string
         does_pass = does_pass and match != None and match != ""
         
-   
-    #return match == password
     return does_pass
 
 
